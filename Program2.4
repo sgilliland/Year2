@@ -1,0 +1,297 @@
+/*******************************************************************************
+// Name: Sarah Gilliland
+//
+// Course: CS 1063-202, Spring 19, Wuthrich
+//
+// Purpose: This program will read information from a cpp of client code with 6
+// different fractions. The program will use a class in a .h file to hold this 
+// data. It will sort the fractions from least to greatest using a bubble
+// sort. It will display this information in an
+// output file.
+*******************************************************************************/
+
+#include "Fraction_Gilliland.h"
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+/*
+Function name: Fraction
+Input: none
+Process: default constructor that gives num and dem default values
+Output: none
+*/
+Fraction::Fraction() {
+	num = 0;
+	den = 1;
+}
+
+/*
+Function name: Fraction
+Input: two ints
+Process: paramaterized constructor that takes inputted values and set them 
+		to num and den
+Output: none
+*/
+Fraction::Fraction(int n, int d) {
+	num = n;
+	den = d;
+}
+
+/*
+Function name: getNumerator
+Input: none
+Process: getter function that accesses the private numerator value
+Output: numerator as an int called num
+*/
+int Fraction::getNumerator() {
+	return num;
+}
+
+/*
+Function name: getDenominator
+Input: none
+Process: getter function that accesses the private denominator value
+Output: denominator as an int called den
+*/
+int Fraction::getDenominator() {
+	return den;
+}
+
+/*
+Function name: setNumerator
+Input: numerator as an int called n
+Process: mutator function that sets the given int as the numerator
+Output: none
+*/
+void Fraction::setNumerator(int n) {
+	num = n;
+}
+
+/*
+Function name: setDenominator
+Input: denominator as an int called d
+Process: sets the given int as the denominator
+Output: none
+*/
+void Fraction::setDenominator(int d) {
+	den = d;
+}
+
+/*
+Function name: toDecimal
+Input: none
+Process: changes the numerator value to a double and divides it by the 
+		denominator
+Output: the decimal value of a given fraction
+*/
+double Fraction::toDecimal() {
+	return (double)num / den;
+}
+
+/*
+Function name: overloading *
+Input: constant object b
+Process: multiplies the numerators of fraction b and a given fraction
+Output: returns an object called product that contains the resulting fraction
+*/
+Fraction Fraction::operator*(const Fraction &b) {
+	Fraction product;
+	
+	product.num = num * b.num;
+	product.den = den * b.den;
+
+	product = simplify(product);
+
+	return product;
+}
+
+/*
+Function name: overloading /
+Input: constant object b
+Process: divides the numerators of fraction b and a given fraction by flipping
+		the b fraction and multiplying
+Output: returns an object called quotient that contains the resulting fraction
+*/
+Fraction Fraction::operator/(const Fraction &b) {
+	Fraction quotient;
+
+	quotient.num = num * b.den;
+	quotient.den = den * b.num;
+
+	quotient = simplify(quotient);
+
+	return quotient;
+}
+
+/*
+Function name: overloading +
+Input: constant object b
+Process: adds the numerators of fraction b and a given numerator by finding a
+		common denominator, adding the numerators, and simplifying the fraction
+		with the simplfying function. Checks for adding zeroes
+Output: returns an object called sum that contains the resulting fraction
+*/
+Fraction Fraction::operator+(const Fraction &b) {
+	Fraction sum;
+	Fraction x(num, den);
+	Fraction y(b.num, b.den);
+
+	if (den == 0 || num == 0)
+		return y;
+	else if (b.den == 0 || b.num == 0)
+		return x;
+	else
+	{
+		sum.den = x.den * y.den;
+
+		x.num = x.num * y.den;
+		y.num = y.num * x.den;
+		sum.num = x.num + y.num;
+
+		sum = simplify(sum);
+
+		return sum;
+	}
+	
+}
+
+/*
+Function name: overloading -
+Input: constant object b
+Process: subtracts the numerators of fraction b and a given numerator by finding
+		a common denominator, adding the numerators, and simplifying the
+		fraction with the simplfying function. Checks for subtracting zeroes
+Output: returns an object called difference that contains the resulting fraction
+*/
+Fraction Fraction::operator-(const Fraction &b) {
+	Fraction difference;
+	Fraction x(num, den);
+	Fraction y(b.num, b.den);
+
+	if (den == 0 || num == 0) {
+		y.num = y.num * (-1);
+		return y;
+	}
+	else if (b.den == 0 || b.num == 0)
+		return x;
+	else {
+		difference.den = x.den * y.den;
+
+		x.num = x.num * y.den;
+		y.num = y.num * x.den;
+		difference.num = x.num - y.num;
+
+		difference = simplify(difference);
+
+		return difference;
+	}
+}
+
+/*
+Function name: overloading >
+Input: constant object b
+Process: uses the toDecimal function to change the fractions to decimal and
+		then uses the > operator to find the greater fraction
+Output: returns a bool value of true if the first value is greater and false
+		if it is not
+*/
+bool Fraction::operator>(const Fraction &b) {
+	Fraction x(num, den);
+	Fraction y(b.num, b.den);
+	bool result = false;
+
+	if (x.toDecimal() > y.toDecimal())
+		result = true;
+	else
+		result = false;
+
+	return result;
+}
+
+/*
+Function name: gcd
+Input: two integers
+Process: checks to see that the y value (denominator) is not equal to zero. If
+		not equal, it finds the mod of the two numbers. If the mod is equal to
+		zero, it returns the denominator because that is it the greatest common
+		divisor. If the mod is not equal to 0, it calls itself and sets the
+		denominator as its new numerator and the mod as the denominator.
+Output: returns an int which is the gcd
+*/
+int Fraction::gcd(int x, int y) 
+{
+	if (y != 0) {
+		if (x % y == 0) // Base code
+			return y;
+		else
+			return gcd(y, x%y);
+	}
+	else
+		cout << "Cannot";
+}
+
+/*
+Function name: simplify
+Input: an object called f
+Process: calls the gcd function and assigns the gcd to tmp. If tmp is zero, it
+		returns the object f. If not, it divides the numerator and denominator
+		by the tmp.
+Output: object called result which holds the resulting fraction
+*/
+Fraction Fraction::simplify(Fraction f) {
+	int tmp;
+	Fraction result;
+
+	tmp = gcd(f.den, f.num);
+
+	if (tmp == 0) {
+		result = f;
+	}
+	else {
+		result.num = f.num / tmp;
+		result.den = f.den / tmp;
+	}
+		
+	return result;
+}
+
+/*
+Function name: overloading <<
+Input: ostream for outputting and an object named f
+Process: checks for whole numbers and changes improper fractions to mixed
+		numbers. Then makes sure that if there is a zero on the numerator
+		or denominator, the fraction is outputted as a zero. If none of these 
+		are true, it just simplifies the fraction.
+Output: statement to the output file
+*/
+ostream& operator<<(ostream &out, Fraction f) {
+	// Check improper fraction
+	Fraction s;
+	if ((f.num >= f.den) && (f.den != 0)) {
+		if (f.num % f.den == 0) // Whole numbers
+		{
+			out << f.num / f.den;
+		}
+		else // improper fraction to mixed number
+		{
+			s = f.simplify(f); 
+			out << s.num / s.den << " and " << s.num % s.den << " / " << s.den;
+		}
+	}
+	else if ((f.num == 0) || (f.den == 0))
+		out << 0;
+	else {
+		s = f.simplify(f);
+		out << s.num << "/" << s.den;
+	}
+	return out;
+}
+
+/*
+Function name: Destructor
+Input: none
+Process: destructs the class
+Output: none
+*/
+Fraction::~Fraction() {}
