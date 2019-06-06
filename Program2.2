@@ -1,0 +1,127 @@
+/* -------------------------------------------------------------------------
+
+   Sarah Gilliland
+   
+   CS 1063-202, Spring 19, Wuthrich
+
+   This program will prompt the user to answer questions about a lighthouse.
+   It will then output to a screen and tell the user whether or not the
+   lighthouse is colorful and whether or not the lighthouse is tall. 
+
+   -------------------------------------------------------------------------*/
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Lighthouse
+{
+	private:
+		string name, location, color; // Attributes
+		double height;
+	
+	public:
+		Lighthouse() { // Default constructor
+			name = "Nothing";
+			location = "Nowhere";
+			color = "Blank";
+			height = 0.00;
+		}
+
+	// Parameterized constructor
+	Lighthouse(string n, string loc, string col, double h){};
+
+	// Getter functions 
+	string getName() { return name; }
+	string getLocation() { return location; }
+	string getColor() { return color; }
+	int getHeight() { return height; }
+
+	/* Mutator functions:
+	   Each mutator function uses getline to read in a line of string
+	   from the user. */
+	string setName() { getline(cin, name); return name; }
+	string setLocation() { getline(cin, location); return location; }
+	string setColor() { getline(cin, color); return color; }
+
+	/* This mutator function sets height to zero if the user enters a 
+	   negative number. */
+	void setHeight(double h)
+	{
+		if (h >= 0.00)
+			height = h;
+		else
+			height = 0.00;
+	}
+
+	/* First member function:
+	   This function uses the imput for height to inform the user about
+	   whether or not the described lighthouse is tall (100 ft or taller
+	   is considered tall)*/
+	bool isTall() {
+		if (height < 100.00)
+			return false;
+		else
+			return true;
+	}
+
+	/* Second member function: 
+	   This function uses the imput for color to inform the user about
+	   whether or not the described lighthouse is colorful (any color other
+	   than black or white)*/
+	bool isColorful() {
+		if (color == "Black" || color == "White" || color == "black" 
+			|| color == "white")
+			return false;
+		else
+			return true;
+	}
+
+	// Destructor and destructor statement
+	~Lighthouse() {
+		cout << "The object has been destroyed.";
+	}
+};
+
+int main() 
+{
+	Lighthouse light1;
+	string newName, newLoc, newColor;
+	int newHeight;
+	string tallOrNot;
+	string colorAnswer;
+
+	/* Prompting the user to describe the lighthouse and redirecting the data
+	   to the mutator functions in the Lighthouse class. */
+	cout << "Enter the name of the lighthouse: ";
+	light1.setName() = newName;
+	cout << "\nEnter the country where it is located: ";
+	light1.setLocation() = newLoc; 
+	cout << '\n';
+	cout << "What color is the lighthouse? Please only list the main color: ";
+	light1.setColor() = newColor;
+	cout << "How tall (in feet) is the lighthouse? ";
+	cin >> newHeight;
+	light1.setHeight(newHeight);
+
+	/* Calling the member functions and assigning the results an output 
+	   statement. */
+	if (light1.isTall() == false)
+		tallOrNot = " is not tall. It is short.\n";
+	else
+		tallOrNot = " is tall!\n";
+
+	if (light1.isColorful() == false)
+		colorAnswer = " is not colorful.\n\n";
+	else
+		colorAnswer = " is colorful!\n";
+
+	// Printing the results to a screen.
+	cout << "\n\nResults:\n" << "-----------------------------------------\n";
+	cout << light1.getName() << " from " << light1.getLocation() << tallOrNot;
+	cout << light1.getName() << colorAnswer;
+
+	system("pause");
+	return 0;
+}
