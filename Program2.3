@@ -1,0 +1,168 @@
+/***********************************************************************************
+Name: Sarah Gilliland
+Course: CS 1063-202, Spring 19, Wuthrich
+Purpose: This program will read information from an input file about 20
+  different students. It will read their first and last names and 7 of their
+  grades. The program will use a struct to hold this data and find the
+  average. It will then sort the data by alphabetical order and also by
+  grade from highest to lowest. It will display this information in an output file.
+***********************************************************************************/
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+
+// Global constant
+int const numStudents = 20;
+
+
+// Struct for Students
+struct Student
+{
+	int grades[7];
+	string fName, lName;
+	double average;
+
+	// Default constructor
+	Student() {
+		fName = "Nobody";
+		lName = "Nothing";
+		average = 0.0;
+	}
+};
+
+
+// Headers for the functions
+void selectionAlphabetical(Student s[]);
+void insertionNumerical(Student s[]);
+void showsaySelectionSort(Student s[], ofstream &outfile);
+
+
+int main() {
+	ifstream infile;
+	infile.open("students.dat");
+
+	ofstream outfile;
+	outfile.open("gilliland_sarah_prog3.txt");
+	outfile << "Sarah Gilliland\n\n";
+
+	Student s[numStudents];
+	double sum;
+	// Loop for the say of the 20 different students
+	for (int z = 0; z < numStudents; z++) {
+		// Setting sum equal to zero
+		sum = 0;
+		// Reading in the name of the student
+		infile >> s[z].fName >> s[z].lName;
+		// Loop for reading in all 7 grades and adding them up
+		for (int i = 0; i < 7; i++)
+		{
+			infile >> s[z].grades[i];
+			sum += s[z].grades[i];
+		}
+		// Finding the average for every student
+		s[z].average = sum / 7;
+	}
+	// Sort the data alphabetically
+	selectionAlphabetical(s);
+
+	outfile << "\nSorted by last name: \n\n";
+
+	// Outputting the Selection Sort
+	showsaySelectionSort(s, outfile);
+	
+
+	// Sort the data numerically
+	insertionNumerical(s);
+	
+	outfile << "\nSorted by average: \n\n";
+
+	// Outputting the Insertion Sort
+	showsaySelectionSort(s, outfile);
+
+	infile.close();
+	outfile.close();
+	system("pause");
+	return 0;
+}
+
+
+// Function for Selection Sort
+// Input: Object array of s[]
+// Process: It uses one loop to count for each 20 students. It uses the other loop to continue with the insertion sort.
+// Output: The function is void and does not return anything.
+void selectionAlphabetical(Student s[]) {
+
+	int startScan, minIndex;
+	double minValueAvg;
+	string minValueF, minValueL;
+
+	for (startScan = 0; startScan < (numStudents - 1); startScan++) {
+		minIndex = startScan;
+		minValueL = s[startScan].lName;
+		minValueF = s[startScan].fName;
+		minValueAvg = s[startScan].average;
+		for (int index = startScan + 1; index < numStudents; index++) {
+			// If the last name is less than the starter minimum
+			if (s[index].lName < minValueL) {
+				minValueL = s[index].lName;
+				minValueF = s[index].fName;
+				minValueAvg = s[index].average;
+				minIndex = index;
+			}
+		}
+
+		s[minIndex].lName = s[startScan].lName;
+		s[minIndex].fName = s[startScan].fName;
+		s[minIndex].average = s[startScan].average;
+		s[startScan].lName = minValueL;
+		s[startScan].fName = minValueF;
+		s[startScan].average = minValueAvg;
+	}
+}
+
+
+// Function to output
+// Input: Object array of s[], output file function
+// Process: It uses a loop to print the contents of the array s[] for each 20 students
+// Output: It prints the contents of the array s[] to an output file, but returns nothing to main
+
+void showsaySelectionSort(Student s[], ofstream &outfile) {
+	for (int j = 0; j < numStudents; j++)
+		outfile << left << setw(30) << s[j].lName + ", " + s[j].fName << fixed << showpoint << setprecision(1) << right << setw(6) << s[j].average << '\n';
+	outfile << "\n";
+}
+
+
+// Function for Insertion Sort
+// Input: Object array of s[]
+// Process: It uses one loop to count for each 20 students. It uses the other loop to continue with the selection sort.
+// Output: The function is void and does not return anything.
+
+void insertionNumerical(Student s[])
+{
+	// double key;
+	double tempAvg;
+	string tempF, tempL;
+
+	for (int i = 1; i < numStudents; i++)
+	{
+		int j = i - 1;
+		double key = s[i].average;
+		tempAvg = s[i].average;
+		tempF = s[i].fName;
+		tempL = s[i].lName;
+		while (j >= 0 && s[j].average < key)
+		{
+			s[j + 1] = s[j];
+			j--;
+		}
+		s[j + 1].average = tempAvg;
+		s[j + 1].fName = tempF;
+		s[j + 1].lName = tempL;
+	}
+}
