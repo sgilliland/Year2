@@ -1,0 +1,157 @@
+/*************************************************************************
+Name: Sarah Gilliland
+Course: 1063-202, Spring 19, Wuthrich
+This program reads in a series of tic tac toe games from a file.
+It then calculates and displays the winner, if there was one, or whether
+cat won the game or if the game is still in progress.
+*************************************************************************/
+
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+char isHorizontal(char [][3]); // checks to see if game was won horizontally
+char isVertical(char [][3]); // checks to see if game was won vertically
+char isDiagonal1(char [][3]); // checks to see if game was won major diagonally
+char isDiagonal2(char [][3]); // checks to see if game was won minor diagonally
+string isWinnerFound(char[][3], char); // finds overall winner
+
+int main()
+{
+	ifstream in; // opens the input file
+	in.open("tic.dat");
+	ofstream out; // opens the output file
+	out.open("Gilliland_Sarah_tictactoe.txt");
+
+	out << "Sarah Gilliland\n\n";
+	char game[3][3]; // declaring gameboard array
+	int gameCount = 0; // number of gameboards
+	if (in) // if input is being recieved, continue with the loop
+	{
+		in >> gameCount; // reading in number of gameboards
+
+		for (int i = 1; i <= gameCount; i++) 
+		{
+			bool dot = false; // declaring dot variable
+			for (int row = 0; row < 3; row++) // reading in the game
+			{
+				for (int col = 0; col < 3; col++)
+					in >> game[row][col];
+			}
+			
+			for (int row = 0; row < 3; row++) // finding if theres a dot
+			{
+				
+				for (int col = 0; col < 3; col++)
+				{	
+					if (game[row][col] == '.')
+						dot = true;
+				}
+			}
+
+			// printing the result to the output file
+			out <<  isWinnerFound(game, dot) << " game " << i << '\n';
+		}
+	}
+	return 0;
+}
+
+char isVertical(char game[][3])
+{
+	char player[] = { 'X', 'O' };
+	bool winnerFound = false;
+	char winner = NULL;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int c = 0; c < 3; c++) // Loop for columns
+		{
+			if ((game[0][c] == player[i]) && (game[1][c] == player
+				[i]) && (game[2][c] == player[i]))
+			{
+				winnerFound = true;
+				winner = player[i];
+				
+			}
+		}
+	}
+	return winner;
+}
+
+char isHorizontal(char game[][3])
+{
+	char player[] = { 'X', 'O' };
+	bool winnerFound = false;
+	char winner = NULL;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int r = 0; r < 3; r++) // Loop for rows
+		{
+			if ((game[r][0] == player[i]) && (game[r][1] == player
+				[i]) && (game[r][2] == player[i]))
+			{
+				winnerFound = true;
+				winner = player[i];
+			}
+		}
+	}
+	return winner;
+}
+
+char isDiagonal1(char game[][3]) //Diagonal with a negative slope(\)
+{
+	char player[] = { 'X', 'O' };
+	bool winnerFound = false;
+	char winner = NULL;
+	for (int i = 0; i < 2; i++)
+	{
+		if ((game[0][0] == player[i]) && (game[1][1] == player
+			[i]) && (game[2][2] == player[i]))
+		{
+			winnerFound = true;
+			winner = player[i];
+		}
+	}
+	return winner;
+}
+
+char isDiagonal2(char game[][3]) // Diagonal w a positive slope (/),
+{	
+	char player[] = { 'X', 'O' };
+	bool winnerFound = false;
+	char winner = NULL;
+	for (int i = 0; i < 2; i++)
+	{
+		if ((game[0][2] == player[i]) && (game[1][1] == player
+			[i]) && (game[2][0] == player[i]))
+		{
+			winnerFound = true;
+			winner = player[i];
+		}
+	}
+	return winner;
+}
+
+string isWinnerFound(char game[][3], char dot) // function to determine winner
+{
+	string winnerFound;
+	// finding if X won the game
+	if ((isHorizontal(game) != NULL && isHorizontal(game) != 'O') 
+		|| (isVertical(game) != NULL && isVertical(game) != 'O')
+		|| (isDiagonal1(game) != NULL && isDiagonal1(game) != 'O')
+		|| (isDiagonal2(game) != NULL && isDiagonal2(game) != 'O'))
+		winnerFound = "X won";
+	// finding if O won the game
+	else if ((isHorizontal(game) != NULL && isHorizontal(game) != 'X') 
+		|| (isVertical(game) != NULL && isVertical(game) != 'X')
+		|| (isDiagonal1(game) != NULL && isDiagonal1(game) != 'X')
+		|| (isDiagonal2(game) != NULL && isDiagonal2(game) != 'X'))
+		winnerFound = "O won";
+	// finding if dot is true
+	else if (dot)
+		winnerFound = "Game is still in progress for";
+	// if there is no winner
+	else
+		winnerFound = "Cat won";
+	return winnerFound;
+}
